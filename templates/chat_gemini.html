@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbot</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f4f8;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+        }
+        .chat-container {
+            width: 400px;
+            background-color: white;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 50px;
+        }
+        .chat-message {
+            background-color: #e0f7fa;
+            padding: 10px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            width: fit-content;
+        }
+        .user-message {
+            background-color: #c5e1a5;
+            margin-left: auto;
+        }
+        .bot-message {
+            background-color: #b3e5fc;
+        }
+        .input-container {
+            display: flex;
+            gap: 5px;
+            margin-top: 10px;
+        }
+        .audio-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <div id="chatbox">
+            <!-- Mensagens serão adicionadas aqui -->
+        </div>
+        <div class="input-container">
+            <input type="text" id="userInput" placeholder="Escreva sua pergunta...">
+            <button id="micButton">🎤</button> <!-- Botão de microfone -->
+            <button id="sendMessage">Enviar</button>
+        </div>
+        <div class="audio-container">
+            <audio id="audioPlayer" controls style="display: none;"></audio> <!-- Elemento de áudio -->
+            <button id="playAudio" style="display: none;">🔊 Reproduzir</button> <!-- Botão de reprodução -->
+        </div>
+    </div>
+
+    <script>
+        let isRecording = false;
+
+        document.getElementById('sendMessage').addEventListener('click', function() {
+            const userMessage = document.getElementById('userInput').value;
+
+            if (userMessage.trim() === '') return;
+
+            addUserMessage(userMessage);
+            sendMessageToGemini(userMessage);
+
+            // Limpa o campo de entrada
+            document.getElementById('userInput').value = '';
+        });
+
+        // Função para adicionar mensagem do usuário ao chat
+        function addUserMessage(message) {
+            const chatbox = document.getElementById('chatbox');
+            const userMessageDiv = document.createElement('div');
+            userMessageDiv.classList.add('chat-message', 'user-message');
+            userMessageDiv.textContent = message;
+            chatbox.appendChild(userMessageDiv);
+        }
+
+        // Função para enviar mensagem ao Gemini
+        function sendMessageToGemini(message) {
+            fetch('/chat_gemini', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ message: message })
+            })
+            .then(response => response.json())
+            .then(data => {
+                const botMessageDiv = document.createElement('div');
+                botMessageDiv.classList.add('chat-message', 'bot-message');
+                botMessageDiv.textContent = data.response ? "CPA: " + data.response : "Resposta não encontrada";
+                document.getElementById('chatbox').appendChild(botMessageDiv);
+                
+                // Chama o TTS para transformar a resposta em áudio
+                if (data.response) {
+                    generateTTS(data.response);
+                }
+            })
+            .catch(error => {
+                console.error('Erro:', error);
+            });
+        }
+
+        // Função para gerar o áudio do TTS
+        function generateTTS(text) {
+            fetch('/tts', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ text: text })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.audio_url) {
+                    const audioPlayer = document.getElementById('audioPlayer');
+                    const playButton = document.getElementById('playAudio');
+
+                    // Define o src do player de áudio para o arquivo gerado
+                    audioPlayer.src = data.audio_url + '?t=' + new Date().getTime(); // Cache buster para garantir o carregamento
+                    audioPlayer.style.display = 'block'; // Torne o player visível
+
+                    // Mostra o botão de reprodução e associa ao player de áudio
+                    playButton.style.display = 'block';
+                    playButton.onclick = () => {
+                        audioPlayer.load(); // Recarrega o áudio antes de tocar
+                        audioPlayer.play(); // Inicia a reprodução do áudio
+                    };
+                } else {
+                    console.error('Erro ao gerar áudio:', data.error);
+                }
+            })
+            .catch(error => console.error('Erro ao conectar ao TTS:', error));
+        }
+    </script>
+</body>
+</html>

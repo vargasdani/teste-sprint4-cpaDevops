@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciar Áreas de Plantio</title>
+    <link rel="icon" href="{{ url_for('static', filename='img/favicon.png') }}" type="image/png">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #e8efe8;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+            color: #4CAF50;
+            font-size: 2.5em;
+            margin-bottom: 40px;
+        }
+        .center {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .center button {
+            padding: 12px 25px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: background-color 0.3s ease, transform 0.2s;
+        }
+        .center button:hover {
+            background-color: #45a049;
+            transform: translateY(-3px);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: white;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            margin-bottom: 40px;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        table thead {
+            background-color: #4CAF50;
+            color: white;
+        }
+        th, td {
+            padding: 20px;
+            text-align: left;
+        }
+        th {
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: bold;
+        }
+        td {
+            border-bottom: 1px solid #f0f0f0;
+            color: #555;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        tr:last-child td {
+            border-bottom: none;
+        }
+        td a {
+            text-decoration: none;
+        }
+        td button {
+            padding: 8px 15px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 6px;
+            font-size: 0.9em;
+            transition: background-color 0.3s ease, transform 0.2s;
+        }
+        td button:hover {
+            background-color: #45a049;
+            transform: translateY(-2px);
+        }
+        .center a {
+            text-decoration: none;
+        }
+        .button-container {
+            text-align: center;
+            margin-top: 30px;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Gerenciar Áreas de Plantio</h1>
+
+<!-- Botão para adicionar uma nova área -->
+<div class="center">
+    <a href="/nova_area">
+        <button>Adicionar Nova Área de Plantio</button>
+    </a>
+</div>
+
+<!-- Tabela de Áreas de Plantio -->
+<div class="form-container">
+    <table id="areasTable">
+        <thead>
+            <tr>
+                <th>Nome da Área</th>
+                <th>Tamanho (ha)</th>
+                <th>Tipo de Solo</th>
+                <th>Rotação de Culturas</th>
+                <th>Tipo de Irrigação</th>
+                <th>Tecnologia</th>
+                <th>Pragas</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Conteúdo preenchido dinamicamente -->
+        </tbody>
+    </table>
+</div>
+
+<!-- Tabela de Entregas Cadastradas -->
+<h1>Entregas Cadastradas</h1>
+<div class="form-container">
+    <table id="entregasTable">
+        <thead>
+            <tr>
+                <th>Produto</th>
+                <th>Quantidade (kg)</th>
+                <th>Comprador</th>
+                <th>Status</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Conteúdo preenchido dinamicamente -->
+        </tbody>
+    </table>
+</div>
+
+<div class="center">
+    <a href="/">
+        <button>Voltar ao Menu</button>
+    </a>
+</div>
+
+<script>
+    // Dados simulados para as áreas de plantio
+    const areas = [
+        { nome: "Área Norte", tamanho: 15, tipoSolo: "Argiloso", rotacaoCulturas: true, tipoIrrigacao: "Gotejamento", tecnologia: "Sensores de Umidade", pragas: "Lagarta do Cartucho" },
+        { nome: "Área Sul", tamanho: 25, tipoSolo: "Arenoso", rotacaoCulturas: false, tipoIrrigacao: "Aspersão", tecnologia: "Monitoramento por Drone", pragas: "Broca" },
+        { nome: "Área Leste", tamanho: 10, tipoSolo: "Siltoso", rotacaoCulturas: true, tipoIrrigacao: "Inundação", tecnologia: "Estação Meteorológica", pragas: "Nenhuma" }
+    ];
+
+    // Dados simulados de entregas
+    const entregas = [
+        { produto: "Milho", quantidade: 1200, comprador: "Empresa A", status: "Pendente" },
+        { produto: "Soja", quantidade: 1500, comprador: "Empresa B", status: "Entregue" },
+        { produto: "Trigo", quantidade: 1000, comprador: "Empresa C", status: "Pendente" }
+    ];
+
+    // Função para atualizar a tabela de áreas
+    function atualizarTabelaAreas() {
+        const tabela = document.getElementById('areasTable').querySelector('tbody');
+        tabela.innerHTML = ''; // Limpa a tabela
+
+        areas.forEach((area, index) => {
+            tabela.innerHTML += `
+                <tr>
+                    <td>${area.nome}</td>
+                    <td>${area.tamanho} ha</td>
+                    <td>${area.tipoSolo}</td>
+                    <td>${area.rotacaoCulturas ? 'Sim' : 'Não'}</td>
+                    <td>${area.tipoIrrigacao}</td>
+                    <td>${area.tecnologia}</td>
+                    <td>${area.pragas || 'Nenhuma'}</td>
+                    <td>
+                        <button onclick="adicionarPlantacao(${index})">Adicionar Plantação</button>
+                        <button onclick="verPlantacao(${index})">Ver Plantações</button>
+                    </td>
+                </tr>
+            `;
+        });
+    }
+
+    // Função para atualizar a tabela de entregas
+    function atualizarTabelaEntregas() {
+        const tabela = document.getElementById('entregasTable').querySelector('tbody');
+        tabela.innerHTML = ''; // Limpa a tabela
+
+        entregas.forEach((entrega, index) => {
+            tabela.innerHTML += `
+                <tr>
+                    <td>${entrega.produto}</td>
+                    <td>${entrega.quantidade} kg</td>
+                    <td>${entrega.comprador}</td>
+                    <td>${entrega.status}</td>
+                    <td>
+                        <button class="btn-success" onclick="atualizarStatusEntrega(${index})">Entregue</button>
+                        <button class="btn-danger" onclick="excluirEntrega(${index})">Excluir</button>
+                    </td>
+                </tr>
+            `;
+        });
+    }
+
+    // Função para ações dos botões de áreas de plantio
+    function adicionarPlantacao(index) {
+        alert(`Adicionando plantação na ${areas[index].nome}`);
+    }
+
+    function verPlantacao(index) {
+        alert(`Exibindo plantações da ${areas[index].nome}`);
+    }
+
+    // Função para atualizar o status de entrega para "Entregue"
+    function atualizarStatusEntrega(index) {
+        entregas[index].status = 'Entregue';
+        atualizarTabelaEntregas(); // Atualiza a tabela para refletir a alteração de status
+    }
+
+    // Função para excluir uma entrega da lista
+    function excluirEntrega(index) {
+        entregas.splice(index, 1); // Remove a entrega do array
+        atualizarTabelaEntregas(); // Atualiza a tabela para refletir a remoção
+    }
+
+    // Carregar as tabelas de áreas de plantio e entregas ao iniciar a página
+    window.onload = function() {
+        atualizarTabelaAreas();
+        atualizarTabelaEntregas();
+    };
+</script>
+
+</body>
+</html>

@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulação Agrícola</title>
+    <link rel="icon" href="{{ url_for('static', filename='img/favicon.png') }}" type="image/png">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #e8efe8;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        h1 {
+            color: #4CAF50;
+            font-size: 2.2em;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        #container {
+            width: 100%;
+            max-width: 600px;
+        }
+        .box {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        .campos {
+            margin-top: 15px;
+        }
+        label {
+            display: block;
+            font-weight: bold;
+            color: #333;
+        }
+        input, select {
+            margin-top: 10px;
+            padding: 12px;
+            width: 100%;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 1em;
+        }
+        .btnEnviar {
+            padding: 15px;
+            background-color: #33aa37;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 1em;
+            width: 100%;
+            margin-top: 20px;
+            transition: background-color 0.3s ease, transform 0.2s;
+        }
+        .btnEnviar:hover {
+            background-color: #0a790f;
+            transform: translateY(-3px);
+        }
+        .resultado {
+            margin-top: 30px;
+            text-align: center;
+        }
+        .resultado p {
+            font-size: 1em;
+            color: #555;
+        }
+        .resultado h2 {
+            font-size: 1.5em;
+            color: #4CAF50;
+            margin: 5px 0;
+        }
+        .back-button {
+            margin-top: 20px;
+            text-align: center;
+        }
+        .back-button a {
+            text-decoration: none;
+            color: white;
+        }
+        .back-button button {
+            width: 100%;
+            padding: 15px;
+            background-color: #365442;
+            border: none;
+            color: white;
+            border-radius: 5px;
+            font-size: 1em;
+            cursor: pointer;
+        }
+        .back-button button:hover {
+            background-color: #022913;
+        }
+
+        .center {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .center button {
+            padding: 12px 25px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: background-color 0.3s ease, transform 0.2s;
+        }
+        .center button:hover {
+            background-color: #45a049;
+            transform: translateY(-3px);
+        }
+    </style>
+</head>
+
+<body>
+    <div id="container">
+        <div class="box">
+            <h1>Simulação Agrícola</h1>
+
+            <form method="POST" action="/predict" id="formAgricola">
+                <div class="campos">
+                    <label for="Cultura">Cultura:</label>
+                    <select id="Cultura" name="Cultura" required>
+                        <option value="Milho">Milho</option>
+                        <option value="Soja">Soja</option>
+                        <option value="Trigo">Trigo</option>
+                        <option value="Café">Café</option>
+                        <option value="Cana-de-Açúcar">Cana-de-Açúcar</option>
+                    </select>
+                </div>
+
+                <div class="campos">
+                    <label for="Quantidade_a_ser_Plantada_Toneladas">Quantidade a ser Plantada (Toneladas):</label>
+                    <input type="number" id="Quantidade_a_ser_Plantada_Toneladas" name="Quantidade_a_ser_Plantada_Toneladas" required>
+                </div>
+
+                <div class="campos">
+                    <label for="Perimetro">Perímetro do Campo (hectares):</label>
+                    <input type="number" id="Perimetro" name="Perimetro" step="0.1" required>
+                </div>
+
+                <div class="campos">
+                    <label for="Frequencia_Irrigacao">Frequência de Irrigação:</label>
+                    <select id="Frequencia_Irrigacao" name="Frequencia_Irrigacao" required>
+                        <option value="Diária">Diária</option>
+                        <option value="Semanal">Semanal</option>
+                        <option value="Mensal">Mensal</option>
+                    </select>
+                </div>
+
+                <div class="campos">
+                    <label for="Tipo_Solo">Tipo de Solo:</label>
+                    <select id="Tipo_Solo" name="Tipo_Solo" required>
+                        <option value="Argila">Argila</option>
+                        <option value="Areia">Areia</option>
+                        <option value="Silte">Silte</option>
+                        <option value="Calcário">Calcário</option>
+                        <option value="Aluvial">Aluvial</option>
+                        <option value="Não usar">Não usar</option>
+                    </select>
+                </div>
+
+                <div class="campos">
+                    <label for="Tipo_de_Irrigacao">Tipo de Irrigação:</label>
+                    <select id="Tipo_de_Irrigacao" name="Tipo_de_Irrigacao" required>
+                        <option value="Aspersão">Aspersão</option>
+                        <option value="Sulcos">Sulcos</option>
+                        <option value="Gotejamento">Gotejamento</option>
+                        <option value="Subirrigação">Subirrigação</option>
+                        <option value="Microaspersão">Microaspersão</option>
+                        <option value="Não usar">Não usar</option>
+                    </select>
+                </div>
+
+                <!-- Fertilizante -->
+                <div class="campos">
+                    <label for="Fertilizante">Fertilizante:</label>
+                    <select id="Fertilizante" name="Fertilizante" required>
+                        <option value="Nitrogênio">Nitrogênio</option>
+                        <option value="Fósforo">Fósforo</option>
+                        <option value="Composto">Composto</option>
+                        <option value="Orgânico">Orgânico</option>
+                        <option value="Potássio">Potássio</option>
+                        <option value="Nenhum">Nenhum</option>
+                    </select><br>
+                </div>
+
+                <!-- Temperatura Média -->
+                <div class="campos">
+                    <label for="Temperatura_Media">Temperatura Média (ºC):</label>
+                    <input type="number" id="Temperatura_Media" name="Temperatura_Media" required><br>
+                </div>
+
+                <!-- Pragas -->
+                <div class="campos">
+                    <label for="Pragas">Pragas:</label>
+                    <select id="Pragas" name="Pragas" required>
+                        <option value="Fungos">Fungos</option>
+                        <option value="Insetos">Insetos</option>
+                        <option value="Ferrugem">Ferrugem</option>
+                        <option value="Nenhuma">Nenhuma</option>
+                        <option value="Outras">Outras</option>
+                    </select><br>
+                </div>
+
+
+                <!-- Rotação de Culturas -->
+                <div class="campos">
+                    <label for="Rotacao_de_Culturas">Rotação de Culturas:</label>
+                    <select id="Rotacao_de_Culturas" name="Rotacao_de_Culturas" required>
+                        <option value="Sim">Sim</option>
+                        <option value="Não">Não</option>
+                    </select><br>
+                </div>
+
+                <!-- Uso de Pesticidas -->
+                <div class="campos">
+                    <label for="Uso_de_Pesticidas">Uso de Pesticidas:</label>
+                    <select id="Uso_de_Pesticidas" name="Uso_de_Pesticidas" required>
+                        <option value="Alto">Alto</option>
+                        <option value="Moderado">Moderado</option>
+                        <option value="Baixo">Baixo</option>
+                        <option value="Nenhum">Nenhum</option>
+                    </select><br>
+                </div>
+
+
+                <!-- Tecnologia Utilizada -->
+                <div class="campos">
+                    <label for="Tecnologia_Utilizada">Tecnologia Utilizada:</label>
+                    <select id="Tecnologia_Utilizada" name="Tecnologia_Utilizada" required>
+                        <option value="Alto">Alto</option>
+                        <option value="Médio">Médio</option>
+                        <option value="Baixo">Baixo</option>
+                    </select><br>
+                </div>
+
+
+                <div class="campos btn">
+                    <input type="submit" value="Prever" class="btnEnviar">
+                </div>
+            </form>
+
+            <div class="resultado">
+                <p><strong>Custo estimado com fertilizantes:</strong></p>
+                <h2>{{ custo_fertilizante }}</h2>
+
+                <p><strong>Resultado da Previsão:</strong></p>
+                <h2>{{ previsao }}</h2>
+            </div>
+
+            <div class="center">
+                <a href="/">
+                    <button>Voltar ao Menu</button>
+                </a>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

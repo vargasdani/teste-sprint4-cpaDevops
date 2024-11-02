@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard de Atividades</title>
+    <link rel="icon" href="{{ url_for('static', filename='img/favicon.png') }}" type="image/png">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #f4f7f6;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 20px;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+            background-color: #f8fff0;
+            padding: 20px;
+            width: 95%;
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            overflow-y: auto;
+        }
+
+        .main-panel, .side-panel {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .section-header {
+            font-size: 22px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .table-container {
+            margin-bottom: 20px;
+            overflow-x: auto;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #f4f4f4;
+            font-size: 16px;
+            font-weight: bold;
+            color: #555;
+        }
+
+        td {
+            font-size: 14px;
+            color: #333;
+        }
+
+        tr:hover {
+            background-color: #f9f9f9;
+        }
+
+        .btn-success, .btn-view {
+            background-color: #28a745;
+            color: white;
+            padding: 8px 15px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+            display: inline-block;
+        }
+
+        .btn-success:hover, .btn-view:hover {
+            background-color: #218838;
+            transform: translateY(-3px);
+        }
+
+        .btn-success {
+            margin-bottom: 20px;
+        }
+
+        .chart-container {
+            width: 100%;
+            height: 300px;
+        }
+
+        .list-group {
+            background-color: #f4f4f4;
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .list-group-item {
+            padding: 10px;
+            font-size: 14px;
+            border-bottom: 1px solid #ddd;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #333;
+        }
+
+        .list-group-item:last-child {
+            border-bottom: none;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            width: 90%;
+            max-width: 600px;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover {
+            color: black;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .form-group input, .form-group select {
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            font-size: 14px;
+            width: 100%;
+        }
+
+        .center {
+            text-align: left;
+            margin-top: 20px;
+        }
+        .center button {
+            padding: 12px 25px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: background-color 0.3s ease, transform 0.2s;
+        }
+        .center button:hover {
+            background-color: #45a049;
+            transform: translateY(-3px);
+        }
+
+        /* Responsividade */
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+
+            .btn-success, .btn-view {
+                font-size: 12px;
+                padding: 6px 10px;
+            }
+
+            th, td {
+                padding: 10px;
+                font-size: 12px;
+            }
+
+            .chart-container {
+                height: 250px;
+            }
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container">
+        <!-- Painel principal de atividades -->
+        <div class="main-panel">
+
+            <div class="center">
+                <a href="/"> <button>Voltar ao Menu</button></a>
+                <br>
+            </div>
+            <br> <p></p>
+            <div class="section-header">Atividades Ativas</div>
+            <div class="table-container">
+                <table class="table" id="atividadesAtivasTabela">
+                    <thead>
+                        <tr>
+                            <th>Nome da Atividade</th>
+                            <th>Área de Plantio</th>
+                            <th>Tipo de Atividade</th>
+                            <th>Equipamento Necessário</th>
+                            <th>Funcionário Responsável</th>
+                            <th>Data Máxima</th>
+                            <th>Ação</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Atividades ativas preenchidas dinamicamente -->
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="section-header">Histórico de Atividades Concluídas</div>
+            <div class="table-container">
+                <table class="table" id="atividadesConcluidasTabela">
+                    <thead>
+                        <tr>
+                            <th>Nome da Atividade</th>
+                            <th>Área de Plantio</th>
+                            <th>Tipo de Atividade</th>
+                            <th>Equipamento Utilizado</th>
+                            <th>Funcionário Responsável</th>
+                            <th>Data de Realização</th>
+                            <th>Tempo Gasto</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Atividades concluídas preenchidas dinamicamente -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Botão para cadastrar nova atividade -->
+            <button class="btn-success" onclick="abrirModalGeral()">Cadastrar Nova Atividade</button>
+        </div>
+
+        <!-- Painel lateral -->
+        <div class="side-panel">
+            <!-- Lista de Funcionários -->
+            <div class="list-group">
+                <div class="section-header">Funcionários</div>
+                <div id="listaFuncionarios">
+                    <!-- Funcionários preenchidos dinamicamente -->
+                </div>
+            </div>
+
+            <!-- Gráfico de Desempenho -->
+            <div class="chart-container">
+                <canvas id="graficoDesempenho"></canvas>
+            </div>
+
+            <!-- Relatório ao lado -->
+            <div class="list-group">
+                <div class="section-header">Relatório de Atividades</div>
+                <div id="relatorioAtividades">
+                    <!-- Relatório preenchido dinamicamente -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para Cadastrar Nova Atividade -->
+    <div id="modalAtividade" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="fecharModal()">&times;</span>
+            <h3>Cadastrar Nova Atividade</h3>
+            <form id="atividadeForm">
+                <div class="form-group">
+                    <label for="nomeAtividade" class="form-label">Nome da Atividade:</label>
+                    <input type="text" id="nomeAtividade" class="form-control" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="tipoAtividade" class="form-label">Tipo de Atividade:</label>
+                    <select id="tipoAtividade" class="form-select" required>
+                        <option value="aragem">Aragem do Solo</option>
+                        <option value="poda">Poda</option>
+                        <option value="colheita">Colheita</option>
+                        <option value="aplicacao_pesticida">Aplicação de Pesticida</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="equipamento" class="form-label">Equipamento Necessário:</label>
+                    <select id="equipamento" class="form-select" multiple required>
+                        <option value="trator">Trator</option>
+                        <option value="semeadora">Semeadora</option>
+                        <option value="pulverizador">Pulverizador</option>
+                        <option value="arado">Arado</option>
+                        <option value="subsolador">Subsolador</option>
+                        <option value="cortador_grama">Cortador de Grama</option>
+                        <option value="aspirador">Aspirador</option>
+                        <option value="soprador">Soprador</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="dataRealizacao" class="form-label">Data de Realização:</label>
+                    <input type="date" id="dataRealizacao" class="form-control" required>
+                </div>
+                <button type="submit" class="btn btn-success">Cadastrar</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let atividadesAtivas = [];
+        let atividadesConcluidas = [];
+        let funcionarios = [];
+
+        // Função para carregar dados via API
+        async function carregarDados() {
+            try {
+                // Carregar atividades ativas
+                const responseAtivas = await fetch('/api/atividades_ativas');
+                atividadesAtivas = await responseAtivas.json();
+                exibirAtividadesAtivas(atividadesAtivas);
+
+                // Carregar atividades concluídas
+                const responseConcluidas = await fetch('/api/atividades_concluidas');
+                atividadesConcluidas = await responseConcluidas.json();
+                exibirAtividadesConcluidas(atividadesConcluidas);
+
+                // Carregar lista de funcionários
+                const responseFuncionarios = await fetch('/api/funcionarios');
+                funcionarios = await responseFuncionarios.json();
+                exibirFuncionarios(funcionarios);
+
+                // Atualizar gráfico e relatório
+                atualizarGraficoDesempenho();
+                atualizarRelatorio();
+            } catch (error) {
+                console.error('Erro ao carregar dados:', error);
+            }
+        }
+
+        // Função para exibir atividades ativas
+        function exibirAtividadesAtivas(atividades) {
+            const tabela = document.getElementById('atividadesAtivasTabela').querySelector('tbody');
+            tabela.innerHTML = '';
+            atividades.forEach(atividade => {
+                tabela.innerHTML += `
+                    <tr>
+                        <td>${atividade.nome}</td>
+                        <td>${atividade.area_plantio}</td>
+                        <td>${atividade.tipo}</td>
+                        <td>${atividade.equipamento.join(', ')}</td>
+                        <td>${atividade.funcionario}</td>
+                        <td>${atividade.data_maxima}</td>
+                        <td>
+                            ${atividade.status === 'pendente' ? `<button class="btn btn-success" onclick="fazerCheckin(${atividade.id})">Check-in</button>` : ''}
+                            ${atividade.status === 'em_progresso' ? `<button class="btn btn-danger" onclick="fazerCheckout(${atividade.id})">Check-out</button>` : ''}
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        // Função para exibir atividades concluídas
+        function exibirAtividadesConcluidas(atividades) {
+            const tabela = document.getElementById('atividadesConcluidasTabela').querySelector('tbody');
+            tabela.innerHTML = '';
+            atividades.forEach(atividade => {
+                tabela.innerHTML += `
+                    <tr>
+                        <td>${atividade.nome}</td>
+                        <td>${atividade.area_plantio}</td>
+                        <td>${atividade.tipo}</td>
+                        <td>${atividade.equipamento.join(', ')}</td>
+                        <td>${atividade.funcionario}</td>
+                        <td>${atividade.data_realizacao}</td>
+                        <td>${atividade.tempo_gasto}</td>
+                    </tr>
+                `;
+            });
+        }
+
+        // Função para exibir funcionários
+        function exibirFuncionarios(funcionarios) {
+            const lista = document.getElementById('listaFuncionarios');
+            lista.innerHTML = '';
+            funcionarios.forEach(funcionario => {
+                lista.innerHTML += `
+                    <div class="list-group-item">
+                        <span>${funcionario.nome}</span>
+                        <button class="btn-view" onclick="verResponsabilidades(${funcionario.id})">Ver Atividades</button>
+                    </div>
+                `;
+            });
+        }
+
+        // Função para redirecionar para página de responsabilidades
+        function verResponsabilidades(funcionarioId) {
+            window.location.href = `/responsabilidades.html?id=${funcionarioId}`;
+        }
+
+        // Função para abrir modal de cadastro de nova atividade
+        function abrirModalGeral() {
+            document.getElementById('modalAtividade').style.display = 'flex';
+        }
+
+        // Função para fechar modal
+        function fecharModal() {
+            document.getElementById('modalAtividade').style.display = 'none';
+        }
+
+        // Função para atualizar gráfico de desempenho
+        function atualizarGraficoDesempenho() {
+            const ctx = document.getElementById('graficoDesempenho').getContext('2d');
+            const chart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Concluídas', 'Ativas', 'Atrasadas'],
+                    datasets: [{
+                        label: 'Desempenho de Atividades',
+                        data: [atividadesConcluidas.length, atividadesAtivas.length, 5], // Exemplo de dados
+                        backgroundColor: ['#28a745', '#007bff', '#dc3545'],
+                        borderColor: ['#218838', '#0056b3', '#c82333'],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+        // Função para atualizar relatório
+        function atualizarRelatorio() {
+            const relatorio = document.getElementById('relatorioAtividades');
+            relatorio.innerHTML = `
+                <p>Total de Atividades Ativas: ${atividadesAtivas.length}</p>
+                <p>Total de Atividades Concluídas: ${atividadesConcluidas.length}</p>
+                <p>Atividades Atrasadas: 5</p> <!-- Exemplo -->
+            `;
+        }
+
+
+        async function carregarDados() {
+            try {
+                // Carregar atividades ativas
+                const responseAtivas = await fetch('/api/atividades_ativas');
+                const atividadesAtivas = await responseAtivas.json();
+                exibirAtividadesAtivas(atividadesAtivas);
+        
+                // Carregar atividades concluídas
+                const responseConcluidas = await fetch('/api/atividades_concluidas');
+                const atividadesConcluidas = await responseConcluidas.json();
+                exibirAtividadesConcluidas(atividadesConcluidas);
+        
+                // Carregar lista de funcionários
+                const responseFuncionarios = await fetch('/api/funcionarios');
+                const funcionarios = await responseFuncionarios.json();
+                exibirFuncionarios(funcionarios);
+            } catch (error) {
+                console.error('Erro ao carregar dados:', error);
+            }
+        }
+        
+        async function cadastrarAtividade() {
+            const novaAtividade = {
+                nome: document.getElementById('nomeAtividade').value,
+                tipo: document.getElementById('tipoAtividade').value,
+                equipamento: [...document.getElementById('equipamento').options].filter(option => option.selected).map(option => option.value),
+                data_realizacao: document.getElementById('dataRealizacao').value
+            };
+        
+            try {
+                const response = await fetch('/api/cadastrar_atividade', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(novaAtividade)
+                });
+        
+                if (response.ok) {
+                    alert('Atividade cadastrada com sucesso!');
+                    fecharModal();
+                    carregarDados();
+                }
+            } catch (error) {
+                console.error('Erro ao cadastrar atividade:', error);
+            }
+        }
+        
+
+        // cadastro atividades
+        document.getElementById('atividadeForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+        
+            const data = {
+                descricao: document.getElementById('descricaoAtividade').value,
+                funcionario: document.getElementById('funcionario').value,
+                data_inicio: document.getElementById('dataInicio').value,
+                data_fim: document.getElementById('dataFim').value,
+                status: document.getElementById('status').value
+            };
+        
+            const response = await fetch('/api/atividades', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+        
+            if (response.ok) {
+                alert('Atividade cadastrada com sucesso!');
+                window.location.reload(); // Recarregar a lista de atividades
+            } else {
+                alert('Erro ao cadastrar atividade');
+            }
+        });
+        
+
+        // Carregar dados ao iniciar a página
+        window.onload = carregarDados;
+    </script>
+</body>
+</html>
