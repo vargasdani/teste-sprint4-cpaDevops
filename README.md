@@ -15,6 +15,12 @@ PS: note que nesse vídeo, mostramos de 3 maneiras diferentes, sendo elas:
 
 Link do vídeo dessa parte: https://youtu.be/lbCUuhyBNcU
 
+Após a criação do webapp rm-99400, senti a necessidade de criar mais um, dessavez, conetando-o ao meu repositório do Github, apenas para mostrar a execução direta por aqui também, por isso, foi criado o rg-99400-2 e editei também a conexão com ele e dei deploy novamente :) tudo funcionou! E foi possível mostrar no vídeo também o log do Github actions! Porém, como logo em seguida apaguei esse webapp porem a pipeline ainda estava configurada, a cada commit/atualização que eu fazia nesse repositório, disparava uma nova automação de build, só que constou como falha pois fui apagando os itens para não gastar créditos! Mas essa é exatamente a função da Pipeline, automação de processos,CI,CD e monitoramento.
+
+![image](https://github.com/user-attachments/assets/3bedd595-8927-416d-b56c-38502cadf28f)
+
+![image](https://github.com/user-attachments/assets/40a6771a-a1a6-4345-88d0-6686d2306f56)
+
 https://www.canva.com/design/DAGRHMXIphk/tT9LsLDum8_M4ljDm_DVNw/edit
 
 Durante o Workshop de introdução de tema do nosso Challenge, o host pareceu interessar-se pelo tema de Agronegócio, porém ainda não havia muitas iniciativas nesse eixo com o nome da empresa.
