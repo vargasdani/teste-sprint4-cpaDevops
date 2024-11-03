@@ -13,7 +13,7 @@ PS: note que nesse vídeo, mostramos de 3 maneiras diferentes, sendo elas:
 
 3-subindo esse repositório, que corresponde a matéria de inteligencia artificial, focado na linguagem python, porém usando html para o front(sendo assim, selecionamos html para a pipeline)
 
-Link do vídeo dessa parte: https://youtu.be/lbCUuhyBNcU
+Link do vídeo dessa parte: https://youtu.be/lI0xXyWhIwo
 
 Após a criação do webapp rm-99400, senti a necessidade de criar mais um, dessa vez, conetando-o ao meu repositório do Github, apenas para mostrar a execução direta por aqui também, por isso, foi criado o rg-99400-2 e editei também a conexão com ele e dei deploy novamente :) tudo funcionou! E foi possível mostrar no vídeo também o log do Github actions! Porém, como logo em seguida apaguei esse webapp e os grupos de recursos porem a pipeline ainda estava configurada, a cada commit/atualização que eu faço nesse repositório, disparava uma nova automação de build, só que constou como falha pois fui apagando os itens para não gastar créditos! Mas essa é exatamente a função da Pipeline, automação de processos,CI e CD.
 
