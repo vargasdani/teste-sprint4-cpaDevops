@@ -78,4 +78,29 @@ Para rodar o projeto:
 
 
 
-PARA REALIZAR A CONFIGURAÇÃO E EXECUÇÃO DA PIPELINE:
+PARA REALIZAR A CONFIGURAÇÃO E EXECUÇÃO DA PIPELINE(para fazer da mesma maneira quedeu sucesso para mim, siga os passos a partir do minuto 17:28 do vídeo) :
+
+1-Importe esse repositório para a sua organização
+
+![image](https://github.com/user-attachments/assets/2fa0180c-5b5b-4c39-aed8-5f6194fc93fb)
+
+2-Crie um grupo de recursos e um banco de dados no portal da Azure.
+
+3-Execute no seu banco, o script SQL localizado aqui na pasta CRUD.json
+
+4-Crie o seu web app na azure
+
+5-Configure a pipeline de Build no Azure DevOps, escolhendo apenas parte da solução(o front em html).
+
+6-Execute a pipeline de Buid.
+
+![image](https://github.com/user-attachments/assets/b3bc252c-cfa5-42fb-9961-a19ea90c6a01)
+
+
+7-Assim que der sucesso, configure a sua pipeline de Release.
+
+![image](https://github.com/user-attachments/assets/48d86510-ff21-46e2-91cb-064a712d9168)
+
+8- Confira o log da sua pipeline a partir do github actions e do azure devops.
+
+9-Acesse a sua aplicação.
