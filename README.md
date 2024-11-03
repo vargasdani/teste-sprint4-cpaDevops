@@ -1,5 +1,5 @@
 Sobre o Projeto:
-Link do video: https://youtu.be/uOiWovr44Ps?si=CA1sJUyjzeJ5ZjaZ
+Link do video: https://youtu.be/BUmLjLy5R8U
 
 
 https://www.canva.com/design/DAGRHMXIphk/tT9LsLDum8_M4ljDm_DVNw/edit
@@ -55,3 +55,8 @@ Para rodar o projeto:
 - Dentro do arquivo, em qualquer lugar, clique com o botão direito do mouse -> Run Python -> Run Python File in Terminal
 - O console irá abrir e mostrará algo como "* Running on http://127.0.0.1:8080"
 - No console, coloque o mouse em cima do link e pressione Ctrl + Clique
+
+
+
+
+PARA REALIZAR A CONFIGURAÇÃO E EXECUÇÃO DA PIPELINE:
