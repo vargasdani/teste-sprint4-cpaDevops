@@ -1,6 +1,19 @@
 Sobre o Projeto:
-Link do video: https://youtu.be/BUmLjLy5R8U
 
+Link do video com descrição e funcionamento: https://youtu.be/BUmLjLy5R8U
+
+Link do vídeo com banco de dados em nuvem e configuração de Pipeline de Build e Release 
+PS: note que nesse vídeo, mostramos de 3 maneiras diferentes, sendo elas:
+
+1-importando o repositório da entrega de Java
+
+
+2-com docker compose para .net
+
+
+3-subindo esse repositório, que corresponde a matéria de inteligencia artificial, focado na linguagem python, porém usando html para o front(sendo assim, selecionamos html para a pipeline)
+
+Link do vídeo dessa parte: https://youtu.be/lbCUuhyBNcU
 
 https://www.canva.com/design/DAGRHMXIphk/tT9LsLDum8_M4ljDm_DVNw/edit
 
